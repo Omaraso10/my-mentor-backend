@@ -38,7 +38,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/users")
-@CrossOrigin(originPatterns = "*")
+@CrossOrigin(origins = "${allowed.origins}")
 @Tag(name = "User", description = "API para gestionar usuarios")
 public class UserController {
     

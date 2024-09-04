@@ -28,7 +28,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
-@CrossOrigin(originPatterns = "*")
+@CrossOrigin(origins = "${allowed.origins}")
 @Tag(name = "Professional", description = "API para gestionar profesionales, áreas y mentores")
 public class ProfessionalController {
 

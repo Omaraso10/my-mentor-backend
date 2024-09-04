@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @RestController
 @RequestMapping("/gpt")
-@CrossOrigin(originPatterns = "*")
+@CrossOrigin(origins = "${allowed.origins}")
 @Tag(name = "ChatGPT Asesorías", description = "API para gestionar asesorías profesionales utilizando IA")
 public class ChatGPTController {
 

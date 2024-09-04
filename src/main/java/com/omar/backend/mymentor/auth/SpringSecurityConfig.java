@@ -3,6 +3,7 @@ package com.omar.backend.mymentor.auth;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +26,9 @@ import com.omar.backend.mymentor.auth.filters.JwtValidationFilter;
 
 @Configuration
 public class SpringSecurityConfig {
+
+    @Value("${allowed.origins}")
+    private String allowedOrigins;
 
     @Autowired
     private AuthenticationConfiguration authenticationConfiguration;
@@ -63,7 +67,7 @@ public class SpringSecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
 
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+        config.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
         config.setAllowedOriginPatterns(Arrays.asList("*"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
