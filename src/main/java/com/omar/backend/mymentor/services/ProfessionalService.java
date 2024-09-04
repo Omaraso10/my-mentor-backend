@@ -19,7 +19,7 @@ public interface ProfessionalService {
 
     List<ProfessionalDto> findProfessionalByAreaId(Long areaId);
 
-    public  Optional<MentorDto> addProfessionalToUser(String uuid, Long professionalId);
+    public Optional<MentorDto> addProfessionalToUser(String uuid, Long professionalId);
 
     public void removeProfessionalFromUser(Long userProfessionalId);
 

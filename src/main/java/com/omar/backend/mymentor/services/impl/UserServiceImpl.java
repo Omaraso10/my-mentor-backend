@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.omar.backend.mymentor.models.IUser;
+import com.omar.backend.mymentor.models.dto.MentorDto;
 import com.omar.backend.mymentor.models.dto.UserCreateDto;
 import com.omar.backend.mymentor.models.dto.UserResponseDTO;
 import com.omar.backend.mymentor.models.dto.UserUpdateDto;
@@ -23,6 +24,7 @@ import com.omar.backend.mymentor.models.entities.Role;
 import com.omar.backend.mymentor.models.entities.User;
 import com.omar.backend.mymentor.repositories.RoleRepository;
 import com.omar.backend.mymentor.repositories.UserRepository;
+import com.omar.backend.mymentor.services.ProfessionalService;
 import com.omar.backend.mymentor.services.UserService;
 
 @Service
@@ -30,6 +32,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository repository;
+
+    @Autowired
+    private ProfessionalService professionalService;
 
     @Autowired
     private RoleRepository roleRepository;
@@ -85,10 +90,18 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserResponseDTO save(UserCreateDto userDto) {
+        UserResponseDTO userRespose;
         User user = DtoMapperUserCreateRequest.builder().setUser(userDto).build();
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setRoles(getRoles(user));
-        return DtoMapperUserResponse.builder().setUser(repository.save(user)).build();
+        repository.save(user);
+        user.setMentors(null);
+        userRespose = DtoMapperUserResponse.builder().setUser(repository.save(user)).build();
+        Optional<MentorDto> mentorsOp = professionalService.addProfessionalToUser(userRespose.getUuid(), 1L);
+        List<MentorDto> mentorList = new ArrayList<>();
+        mentorList.add(mentorsOp.orElseThrow());
+        userRespose.setMentors(mentorList);
+        return userRespose;
     }
 
     @Override

@@ -42,7 +42,8 @@ public class DtoMapperUserResponse {
         userResponseDto.setEmail(user.getEmail());
         userResponseDto.setAdmin(isAdmin);
         userResponseDto.setEnabled(user.getEnabled());
-        userResponseDto.setMentors(getMentors(user.getMentors()));
+        List<UserProfessional> mentors = user.getMentors();
+        userResponseDto.setMentors(mentors != null ? getMentors(mentors) : null);
         return userResponseDto;
     }
 
