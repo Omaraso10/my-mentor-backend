@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.omar.backend.mymentor.models.dto.AdvisoryDto;
 import com.omar.backend.mymentor.models.dto.AskProfessionalDto;
 import com.omar.backend.mymentor.services.AdvisoryService;
-import com.omar.backend.mymentor.services.ChatGptService;
-import com.omar.backend.mymentor.services.impl.ChatGptServiceImpl;
+import com.omar.backend.mymentor.services.AIService;
+import com.omar.backend.mymentor.services.impl.AIServiceImpl;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -37,11 +37,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Tag(name = "ChatGPT Asesorías", description = "API para gestionar asesorías profesionales utilizando IA")
 public class ChatGPTController {
 
-    private final ChatGptService chatGptService;
+    private final AIService aIService;
     private final AdvisoryService advisoryService;
 
-    public ChatGPTController(ChatGptServiceImpl chatGptService, AdvisoryService advisoryService) {
-        this.chatGptService = chatGptService;
+    public ChatGPTController(AIServiceImpl aIService, AdvisoryService advisoryService) {
+        this.aIService = aIService;
         this.advisoryService = advisoryService;
     }
 
@@ -108,7 +108,7 @@ public class ChatGPTController {
     public ResponseEntity<?> addAdvice(@RequestBody AskProfessionalDto ask) {
          Map<String, Object> response = new HashMap<>();
          try {
-            Optional<AdvisoryDto> advisoryOptional = chatGptService.addAdviceIA(ask);
+            Optional<AdvisoryDto> advisoryOptional = aIService.addAdviceIA(ask);
             if (advisoryOptional.isPresent()) {
                 response.put("advice", advisoryOptional.orElseThrow());
                 response.put("mensaje" , "Asesoría creada exitosamente.");
@@ -134,7 +134,7 @@ public class ChatGPTController {
     public ResponseEntity<?> updateAdvice(@RequestBody AskProfessionalDto ask, @PathVariable Long id) {
         Map<String, Object> response = new HashMap<>();
         try {
-           Optional<AdvisoryDto> advisoryOptional = chatGptService.updateAdviceIA(ask, id);
+           Optional<AdvisoryDto> advisoryOptional = aIService.updateAdviceIA(ask, id);
            if (advisoryOptional.isPresent()) {
                response.put("advice", advisoryOptional.orElseThrow());
                response.put("mensaje" , "Asesoría actualizada exitosamente.");

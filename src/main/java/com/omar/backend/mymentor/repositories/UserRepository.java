@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -26,6 +27,8 @@ public interface UserRepository
 
         Page<User> findAll(Pageable pageable);
 
+        @Modifying
+        @Query("DELETE FROM User u WHERE u.uuid=?1")
         void deleteByUuid(String uuid);
 
         public boolean existsByEmail(String email);

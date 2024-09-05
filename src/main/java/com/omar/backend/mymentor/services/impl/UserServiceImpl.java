@@ -23,6 +23,7 @@ import com.omar.backend.mymentor.models.dto.mapper.DtoMapperUserResponse;
 import com.omar.backend.mymentor.models.entities.Role;
 import com.omar.backend.mymentor.models.entities.User;
 import com.omar.backend.mymentor.repositories.RoleRepository;
+import com.omar.backend.mymentor.repositories.UserProfessionalRepository;
 import com.omar.backend.mymentor.repositories.UserRepository;
 import com.omar.backend.mymentor.services.ProfessionalService;
 import com.omar.backend.mymentor.services.UserService;
@@ -38,6 +39,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private UserProfessionalRepository userProfessionalRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -126,6 +130,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void remove(String uuid) {
+        userProfessionalRepository.deleteByUuid(uuid);
         repository.deleteByUuid(uuid);
     }
 

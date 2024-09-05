@@ -19,6 +19,12 @@ public class AskProfessionalDto implements Serializable{
             description = "Pregunta para el profesional")
     private String ask;
 
+    @NotEmpty(message = "no puede estar vacio")
+    @JsonProperty("api_type")
+    @Schema(example = "claude-3.5-sonnet", 
+            description = "Tipo de IA")
+    private String apiType;
+
     public String getAsk() {
         return ask;
     }
@@ -33,6 +39,14 @@ public class AskProfessionalDto implements Serializable{
 
     public void setUserProfessionalId(Long userProfessionalId) {
         this.userProfessionalId = userProfessionalId;
+    }
+
+    public String getApiType() {
+        return apiType;
+    }
+
+    public void setApiType(String apiType) {
+        this.apiType = apiType;
     }
 
 }

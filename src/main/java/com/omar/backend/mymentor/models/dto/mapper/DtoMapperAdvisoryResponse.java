@@ -51,8 +51,9 @@ public class DtoMapperAdvisoryResponse {
         advisoryDetailDto.setId(advisoryDetail.getId());
         advisoryDetailDto.setLineNumber(advisoryDetail.getLineNumber());
         advisoryDetailDto.setQuestion(advisoryDetail.getQuestion());
-        JSONObject messageObject = new JSONObject(advisoryDetail.getAnswer());
-        advisoryDetailDto.setAnswer(messageObject.getString("content"));
+        // JSONObject messageObject = new JSONObject(advisoryDetail.getAnswer());
+        // advisoryDetailDto.setAnswer(messageObject.getString("content"));
+        advisoryDetailDto.setAnswer(advisoryDetail.getAnswer());
         return advisoryDetailDto;
     }
 
