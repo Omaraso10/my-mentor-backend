@@ -47,6 +47,7 @@ public class AIServiceImpl implements AIService {
     private final String anthropicApiToken;
     private final String anthropicApiUrl;
     private final String anthropicApiModel;
+    private final String anthropicApiVersion;
     private final int maxTokens;
     private final AdvisoryService advisoryService;
     private final ProfessionalService professionalService;
@@ -60,6 +61,7 @@ public class AIServiceImpl implements AIService {
                          @Value("${anthropic.api.token}") String anthropicApiToken, 
                          @Value("${anthropic.api.url}") String anthropicApiUrl,
                          @Value("${anthropic.api.model}") String anthropicApiModel,
+                         @Value("${anthropic.api.version}") String anthropicApiVersion,
                          @Value("${max.tokens}") int maxTokens,
                          AdvisoryService advisoryService, 
                          ProfessionalService professionalService, 
@@ -72,6 +74,7 @@ public class AIServiceImpl implements AIService {
         this.anthropicApiToken = anthropicApiToken;
         this.anthropicApiUrl = anthropicApiUrl;
         this.anthropicApiModel = anthropicApiModel;
+        this.anthropicApiVersion = anthropicApiVersion;
         this.maxTokens = maxTokens;
         this.advisoryService = advisoryService;
         this.professionalService = professionalService;
@@ -146,7 +149,7 @@ public class AIServiceImpl implements AIService {
             headers.setBearerAuth(openaiApiToken);
         } else if ("anthropic".equals(apiType)) {
             headers.set("x-api-key", anthropicApiToken);
-            headers.set("anthropic-version", "2023-06-01");
+            headers.set("anthropic-version", anthropicApiVersion);
         }
 
         Optional<ProfessionalDto> professionalDto = professionalService.findProfessionalById(professional_id);

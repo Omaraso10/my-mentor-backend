@@ -3,7 +3,6 @@ package com.omar.backend.mymentor.models.dto.mapper;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
 import com.omar.backend.mymentor.models.dto.AdvisoryDetailDto;
@@ -51,8 +50,6 @@ public class DtoMapperAdvisoryResponse {
         advisoryDetailDto.setId(advisoryDetail.getId());
         advisoryDetailDto.setLineNumber(advisoryDetail.getLineNumber());
         advisoryDetailDto.setQuestion(advisoryDetail.getQuestion());
-        // JSONObject messageObject = new JSONObject(advisoryDetail.getAnswer());
-        // advisoryDetailDto.setAnswer(messageObject.getString("content"));
         advisoryDetailDto.setAnswer(advisoryDetail.getAnswer());
         return advisoryDetailDto;
     }
