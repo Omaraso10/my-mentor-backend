@@ -131,6 +131,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void remove(String uuid) {
         userProfessionalRepository.deleteByUuid(uuid);
+        repository.deleteUserRolesByUuid(uuid);
         repository.deleteByUuid(uuid);
     }
 

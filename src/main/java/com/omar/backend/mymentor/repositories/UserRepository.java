@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.omar.backend.mymentor.models.entities.User;
@@ -26,6 +27,10 @@ public interface UserRepository
         Optional<User> getUserByEmail(String email);
 
         Page<User> findAll(Pageable pageable);
+
+        @Modifying
+        @Query(value = "DELETE FROM users_roles WHERE uuid = :uuid", nativeQuery = true)
+        void deleteUserRolesByUuid(@Param("uuid") String uuid);
 
         @Modifying
         @Query("DELETE FROM User u WHERE u.uuid=?1")
