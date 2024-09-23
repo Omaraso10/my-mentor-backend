@@ -27,6 +27,12 @@ import com.omar.backend.mymentor.auth.filters.JwtValidationFilter;
 @Configuration
 public class SpringSecurityConfig {
 
+    private final int expiration;
+
+    public SpringSecurityConfig(@Value("${session.expiration}") int expiration) {
+        this.expiration = expiration;
+    }
+
     @Value("${allowed.origins}")
     private String allowedOrigins;
 
@@ -58,7 +64,7 @@ public class SpringSecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .addFilter(new JwtAuthenticationFilter(authenticationConfiguration.getAuthenticationManager()))
+            .addFilter(new JwtAuthenticationFilter(expiration, authenticationConfiguration.getAuthenticationManager()))
             .addFilter(new JwtValidationFilter(authenticationConfiguration.getAuthenticationManager()));
 
         return http.build();
