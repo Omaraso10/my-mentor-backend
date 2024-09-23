@@ -26,8 +26,6 @@ public class Advisory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String model;
-
     private String description;
 
     @Column(name = "advisory_date", columnDefinition = "TIMESTAMP")
@@ -71,14 +69,6 @@ public class Advisory {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getModel() {
-        return model;
-    }
-
-    public void setModel(String model) {
-        this.model = model;
     }
 
     public LocalDate getAdvisoryDate() {

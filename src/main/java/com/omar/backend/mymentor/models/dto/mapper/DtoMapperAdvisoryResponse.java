@@ -34,7 +34,6 @@ public class DtoMapperAdvisoryResponse {
         AdvisoryDto advisoryDto = new AdvisoryDto();
         advisoryDto.setId(advisory.getId());
         advisoryDto.setDescription(advisory.getDescription());
-        advisoryDto.setModel(advisory.getModel());
         advisoryDto.setAdvisorysDetails(getAdvisorysDetails(advisory.getAdvisorysDetails()));
         return advisoryDto;
     }
@@ -51,6 +50,7 @@ public class DtoMapperAdvisoryResponse {
         advisoryDetailDto.setLineNumber(advisoryDetail.getLineNumber());
         advisoryDetailDto.setQuestion(advisoryDetail.getQuestion());
         advisoryDetailDto.setAnswer(advisoryDetail.getAnswer());
+        advisoryDetailDto.setModel(advisoryDetail.getModel());
         return advisoryDetailDto;
     }
 

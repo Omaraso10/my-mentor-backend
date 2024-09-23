@@ -32,7 +32,6 @@ public class DtoMapperAdvisoryRequest {
             throw new RuntimeException("Debe pasar el entity advisory!");
         }
         Advisory advisory = new Advisory();
-        advisory.setModel(advisoryDto.getModel());
         advisory.setDescription(advisoryDto.getDescription());
         advisory.setAdvisorysDetails(getAdvisorysDetails(advisoryDto.getAdvisorysDetails()));
         return advisory;
@@ -50,6 +49,7 @@ public class DtoMapperAdvisoryRequest {
         advisoryDetail.setLineNumber(advisoryDetailDto.getLineNumber());
         advisoryDetail.setQuestion(advisoryDetailDto.getQuestion());
         advisoryDetail.setAnswer(advisoryDetailDto.getAnswer());
+        advisoryDetail.setModel(advisoryDetailDto.getModel());
         return advisoryDetail;
     }
 

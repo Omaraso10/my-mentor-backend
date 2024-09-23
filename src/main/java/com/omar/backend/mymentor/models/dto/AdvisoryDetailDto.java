@@ -33,6 +33,10 @@ public class AdvisoryDetailDto implements Serializable{
             requiredMode = Schema.RequiredMode.REQUIRED)
     private String answer;
 
+    @JsonProperty("model")
+    @Schema(example = "gpt-3.5-turbo", description = "Modelo de IA utilizado para la asesoría")
+    private String model;
+
     public Long getId() {
         return id;
     }
@@ -63,6 +67,14 @@ public class AdvisoryDetailDto implements Serializable{
 
     public void setAnswer(String answer) {
         this.answer = answer;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
     }
     
 }

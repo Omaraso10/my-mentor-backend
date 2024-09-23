@@ -19,10 +19,6 @@ public class AdvisoryDto implements Serializable{
             description = "Descripción breve de la asesoría")
     private String description;
 
-    @JsonProperty("model")
-    @Schema(example = "gpt-3.5-turbo", description = "Modelo de IA utilizado para la asesoría")
-    private String model;
-
     @JsonProperty("advisorys_details")
     @Schema(description = "Lista de detalles de la asesoría, incluyendo preguntas y respuestas")
     private List<AdvisoryDetailDto> advisorysDetails;
@@ -41,14 +37,6 @@ public class AdvisoryDto implements Serializable{
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getModel() {
-        return model;
-    }
-
-    public void setModel(String model) {
-        this.model = model;
     }
 
     public List<AdvisoryDetailDto> getAdvisorysDetails() {

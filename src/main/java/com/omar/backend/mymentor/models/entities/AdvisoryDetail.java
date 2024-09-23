@@ -24,6 +24,16 @@ public class AdvisoryDetail {
     @Column(name = "answer", columnDefinition = "TEXT")
     private String answer;
 
+    private String model;
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
     public Long getId() {
         return id;
     }

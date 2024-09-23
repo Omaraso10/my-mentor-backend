@@ -79,6 +79,7 @@ public class AdvisoryServiceImpl implements AdvisoryService{
             detail.setLineNumber(detailDto.getLineNumber());
             detail.setQuestion(detailDto.getQuestion());
             detail.setAnswer(detailDto.getAnswer());
+            detail.setModel(detailDto.getModel());
             advisory.getAdvisorysDetails().add(detail);
         }
         return Optional.ofNullable(DtoMapperAdvisoryResponse.builder().setAdvisory(advisoryRepository.save(advisory)).build());

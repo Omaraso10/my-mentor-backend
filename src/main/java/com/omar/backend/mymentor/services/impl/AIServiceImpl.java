@@ -98,12 +98,12 @@ public class AIServiceImpl implements AIService {
 
         AdvisoryDto advisoryDto = new AdvisoryDto();
         advisoryDto.setDescription(ask.getAsk().length() > 35 ? ask.getAsk().substring(0, 35).concat("...") : ask.getAsk());
-        advisoryDto.setModel(getModelForApiType(ask.getApiType()));
         List<AdvisoryDetailDto> advisorysDetails = new ArrayList<>();
         AdvisoryDetailDto advisoryDetailDto = new AdvisoryDetailDto();
         advisoryDetailDto.setLineNumber(1L);
         advisoryDetailDto.setQuestion(ask.getAsk());
         advisoryDetailDto.setAnswer(answer);
+        advisoryDetailDto.setModel(getModelForApiType(ask.getApiType()));
         advisorysDetails.add(advisoryDetailDto);
         advisoryDto.setAdvisorysDetails(advisorysDetails);
         advisoryOptional = advisoryService.addAdvisoryToUserProfessional(advisoryDto, ask.getUserProfessionalId());
@@ -136,6 +136,7 @@ public class AIServiceImpl implements AIService {
         detailDto.setLineNumber(lineNumber);
         detailDto.setQuestion(ask.getAsk());
         detailDto.setAnswer(answer);
+        detailDto.setModel(getModelForApiType(ask.getApiType()));
         advisoryOptionalDto = advisoryService.addAdvisoryDetail(detailDto, id);
 
         return advisoryOptionalDto;
