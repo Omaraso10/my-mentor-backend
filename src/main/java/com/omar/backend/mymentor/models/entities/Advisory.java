@@ -41,7 +41,6 @@ public class Advisory {
     @JoinColumn(name = "users_professionals_id")
     private UserProfessional userProfessional;
 
-
     @PrePersist
     public void prePersist(){
         advisoryDate = LocalDate.now();

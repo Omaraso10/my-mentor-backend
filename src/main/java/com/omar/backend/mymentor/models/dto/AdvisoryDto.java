@@ -20,7 +20,7 @@ public class AdvisoryDto implements Serializable{
     private String description;
 
     @JsonProperty("advisorys_details")
-    @Schema(description = "Lista de detalles de la asesoría, incluyendo preguntas y respuestas")
+    @Schema(description = "Lista de detalles de la asesoría, incluyendo preguntas, respuestas e imágenes en base64")
     private List<AdvisoryDetailDto> advisorysDetails;
 
     public Long getId() {

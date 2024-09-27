@@ -20,7 +20,7 @@ import com.omar.backend.mymentor.repositories.UserProfessionalRepository;
 import com.omar.backend.mymentor.services.AdvisoryService;
 
 @Service
-public class AdvisoryServiceImpl implements AdvisoryService{
+public class AdvisoryServiceImpl implements AdvisoryService {
 
     @Autowired
     private AdvisoryRepository advisoryRepository;
@@ -61,9 +61,9 @@ public class AdvisoryServiceImpl implements AdvisoryService{
     @Override
     @Transactional
     public Optional<AdvisoryDto> addAdvisoryToUserProfessional(AdvisoryDto advisoryDto, Long userProfessionalId) {
-        Advisory advisory = new Advisory();
-        advisory = DtoMapperAdvisoryRequest.builder().setAdvisory(advisoryDto).build();
-        UserProfessional userProfessional = userProfessionalRepository.findById(userProfessionalId).orElseThrow(() -> new RuntimeException("userProfessional not found"));
+        Advisory advisory = DtoMapperAdvisoryRequest.builder().setAdvisory(advisoryDto).build();
+        UserProfessional userProfessional = userProfessionalRepository.findById(userProfessionalId)
+                .orElseThrow(() -> new RuntimeException("userProfessional not found"));
         advisory.setUserProfessional(userProfessional);
         return Optional.ofNullable(DtoMapperAdvisoryResponse.builder().setAdvisory(advisoryRepository.save(advisory)).build());
     }
@@ -72,17 +72,17 @@ public class AdvisoryServiceImpl implements AdvisoryService{
     @Transactional
     public Optional<AdvisoryDto> addAdvisoryDetail(AdvisoryDetailDto detailDto, Long advisoryId) {
         Optional<Advisory> advisoryOpt = advisoryRepository.findById(advisoryId);
-        Advisory advisory = new Advisory();
         if (advisoryOpt.isPresent()) {
-            advisory = advisoryOpt.orElseThrow();
+            Advisory advisory = advisoryOpt.get();
             AdvisoryDetail detail = new AdvisoryDetail();
             detail.setLineNumber(detailDto.getLineNumber());
             detail.setQuestion(detailDto.getQuestion());
             detail.setAnswer(detailDto.getAnswer());
             detail.setModel(detailDto.getModel());
             advisory.getAdvisorysDetails().add(detail);
+            return Optional.ofNullable(DtoMapperAdvisoryResponse.builder().setAdvisory(advisoryRepository.save(advisory)).build());
         }
-        return Optional.ofNullable(DtoMapperAdvisoryResponse.builder().setAdvisory(advisoryRepository.save(advisory)).build());
+        return Optional.empty();
     }
 
     @Override
@@ -94,11 +94,6 @@ public class AdvisoryServiceImpl implements AdvisoryService{
     @Override
     @Transactional
     public void removeAdvisoryToUserProfessional(Long userProfessionalId) {
-        List<Advisory> advisorys = (List<Advisory>) advisoryRepository.findByUserProfessionalId(userProfessionalId);
-        advisorys.stream()
-        .map(Advisory::getId) 
-        .forEach(this::removeAdvisoryById); 
         advisoryRepository.deleteByUserProfessionalId(userProfessionalId);
     }
-
 }

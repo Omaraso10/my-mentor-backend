@@ -6,8 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Representa los detalles de una asesoría, incluyendo la pregunta y la respuesta")
-public class AdvisoryDetailDto implements Serializable{
+@Schema(description = "Representa los detalles de una asesoría, incluyendo la pregunta, la respuesta y la imagen en base64")
+public class AdvisoryDetailDto implements Serializable {
 
     @JsonProperty("id")
     @Schema(description = "Identificador único del detalle de la asesoría", 
@@ -76,5 +76,4 @@ public class AdvisoryDetailDto implements Serializable{
     public void setModel(String model) {
         this.model = model;
     }
-    
 }

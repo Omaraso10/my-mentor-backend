@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 
-public class AskProfessionalDto implements Serializable{
+public class AskProfessionalDto implements Serializable {
 
     @JsonProperty("user_professional_id")
     @Schema(example = "1", description = "ID de la relación entre el profesional y el usuario")
@@ -24,6 +24,18 @@ public class AskProfessionalDto implements Serializable{
     @Schema(example = "claude-3.5-sonnet", 
             description = "Tipo de IA")
     private String apiType;
+
+    @JsonProperty("image")
+    @Schema(description = "Imagen adjunta a la pregunta en formato base64 (opcional)")
+    private String image;
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
 
     public String getAsk() {
         return ask;
@@ -48,5 +60,4 @@ public class AskProfessionalDto implements Serializable{
     public void setApiType(String apiType) {
         this.apiType = apiType;
     }
-
 }

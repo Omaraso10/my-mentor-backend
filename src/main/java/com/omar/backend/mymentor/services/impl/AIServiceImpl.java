@@ -93,7 +93,7 @@ public class AIServiceImpl implements AIService {
             professionalId = userProfessional.orElseThrow().getProfessional().getId();
         }
 
-        response = callAPI(ask.getAsk(), professionalId, null, ask.getApiType());
+        response = callAPI(ask.getAsk(), professionalId, null, ask.getApiType(), ask.getImage());
         answer = extractContentFromResponse(response, ask.getApiType());
 
         AdvisoryDto advisoryDto = new AdvisoryDto();
@@ -128,7 +128,8 @@ public class AIServiceImpl implements AIService {
         if(advisoryOptional.isPresent()){
             advisory = advisoryOptional.orElseThrow();
         }
-        response = callAPI(ask.getAsk(), professionalId, advisory.getAdvisorysDetails(), ask.getApiType());
+
+        response = callAPI(ask.getAsk(), professionalId, advisory.getAdvisorysDetails(), ask.getApiType(), ask.getImage());
         answer = extractContentFromResponse(response, ask.getApiType());
 
         AdvisoryDetailDto detailDto = new AdvisoryDetailDto();
@@ -142,7 +143,7 @@ public class AIServiceImpl implements AIService {
         return advisoryOptionalDto;
     }
 
-    private String callAPI(String ask, Long professional_id, List<AdvisoryDetail> advisoryDetails, String apiType) {
+    private String callAPI(String ask, Long professional_id, List<AdvisoryDetail> advisoryDetails, String apiType, String base64Image) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         
@@ -156,7 +157,7 @@ public class AIServiceImpl implements AIService {
         Optional<ProfessionalDto> professionalDto = professionalService.findProfessionalById(professional_id);
         String promptSystem = professionalDto.map(ProfessionalDto::getDescription).orElse("");
 
-        String requestBody = createRequestBody(promptSystem, ask, advisoryDetails, apiType);
+        String requestBody = createRequestBody(promptSystem, ask, advisoryDetails, apiType, base64Image);
 
         HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
         
@@ -178,25 +179,37 @@ public class AIServiceImpl implements AIService {
         }
     }
 
-    private String createRequestBody(String promptSystem, String ask, List<AdvisoryDetail> advisoryDetails, String apiType) {
+    private String createRequestBody(String promptSystem, String ask, List<AdvisoryDetail> advisoryDetails, String apiType, String base64Image) {
         JSONObject requestBody = new JSONObject();
         
         if ("openai".equals(apiType)) {
-            List<JSONObject> messages = new ArrayList<>();
-            messages.add(new JSONObject().put("role", "system").put("content", promptSystem.concat(GlobalConst.INSTRUCTIONS)));
+            JSONArray messages = new JSONArray();
+            messages.put(new JSONObject().put("role", "system").put("content", promptSystem.concat(GlobalConst.INSTRUCTIONS)));
             
             if (advisoryDetails != null) {
                 for (AdvisoryDetail detail : advisoryDetails) {
-                    messages.add(new JSONObject().put("role", "user").put("content", detail.getQuestion()));
-                    messages.add(new JSONObject().put("role", "assistant").put("content", detail.getAnswer()));
+                    messages.put(new JSONObject().put("role", "user").put("content", detail.getQuestion()));
+                    messages.put(new JSONObject().put("role", "assistant").put("content", detail.getAnswer()));
                 }
             }
             
-            messages.add(new JSONObject().put("role", "user").put("content", ask));
+            JSONArray content = new JSONArray();
+            content.put(new JSONObject().put("type", "text").put("text", ask));
+            
+            if (base64Image != null && !base64Image.isEmpty()) {
+                JSONObject imageObject = new JSONObject()
+                    .put("type", "image_url")
+                    .put("image_url", new JSONObject()
+                        .put("url", "data:image/jpeg;base64," + base64Image)
+                        .put("detail", "auto"));
+                content.put(imageObject);
+            }
+            
+            messages.put(new JSONObject().put("role", "user").put("content", content));
             
             requestBody.put("model", openaiApiModel)
-                       .put("max_tokens", maxTokens)
-                       .put("messages", messages);
+                       .put("messages", messages)
+                       .put("max_tokens", maxTokens);
         } else if ("anthropic".equals(apiType)) {
             JSONArray messages = new JSONArray();
             
@@ -206,18 +219,32 @@ public class AIServiceImpl implements AIService {
                     messages.put(new JSONObject().put("role", "assistant").put("content", detail.getAnswer()));
                 }
             }
+
+            JSONArray userContent = new JSONArray();
             
-            messages.put(new JSONObject().put("role", "user").put("content", ask));
+            if (base64Image != null && !base64Image.isEmpty()) {
+                JSONObject imageContent = new JSONObject()
+                    .put("type", "image")
+                    .put("source", new JSONObject()
+                        .put("type", "base64")
+                        .put("media_type", "image/jpeg")
+                        .put("data", base64Image));
+                userContent.put(imageContent);
+            }
+            
+            userContent.put(new JSONObject().put("type", "text").put("text", ask));
+            
+            messages.put(new JSONObject()
+                .put("role", "user")
+                .put("content", userContent));
             
             requestBody.put("model", anthropicApiModel)
-                       .put("max_tokens", maxTokens)
-                       .put("messages", messages)
-                       .put("system", promptSystem.concat(GlobalConst.INSTRUCTIONS));
+                    .put("max_tokens", maxTokens)
+                    .put("messages", messages)
+                    .put("system", promptSystem.concat(GlobalConst.INSTRUCTIONS));
         }
-    
-        String body = requestBody.toString();
-        logger.debug("Request body: {}", body);
-        return body;
+
+        return requestBody.toString();
     }
     
     private String extractContentFromResponse(String responseBody, String apiType) {

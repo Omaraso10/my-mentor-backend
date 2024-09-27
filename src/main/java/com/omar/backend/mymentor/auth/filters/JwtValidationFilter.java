@@ -40,18 +40,16 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
             FilterChain chain)
             throws IOException, ServletException {
 
-        String header = request.getHeader(HEADER_AUTHORIZATION);
+        String token = request.getHeader(HEADER_AUTHORIZATION);
 
-        if (header == null || !header.startsWith(PREFIX_TOKEN)) {
+        if (token == null || !token.startsWith(PREFIX_TOKEN)) {
             chain.doFilter(request, response);
-
             return;
         }
 
-        String token = header.replace(PREFIX_TOKEN, "");
+        token = token.replace(PREFIX_TOKEN, "");
 
         try {
-
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(SECRET_KEY)
                     .build()
@@ -60,9 +58,6 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
 
             Object authoritiesClaims = claims.get("authorities");
             String email = claims.getSubject();
-            Object email2 = claims.get("email");
-            System.out.println(email);
-            System.out.println(email2);
 
             Collection<? extends GrantedAuthority> authorities = Arrays
                     .asList(new ObjectMapper()
@@ -77,12 +72,11 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
         } catch (JwtException e) {
             Map<String, String> body = new HashMap<>();
             body.put("error", e.getMessage());
-            body.put("message", "El token JWT no es valido!");
+            body.put("message", "El token JWT no es válido!");
 
             response.getWriter().write(new ObjectMapper().writeValueAsString(body));
-            response.setStatus(401);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
         }
     }
-
 }
