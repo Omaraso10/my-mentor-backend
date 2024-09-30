@@ -14,9 +14,12 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.omar.backend.mymentor.models.dto.AreaDto;
+import com.omar.backend.mymentor.models.dto.AsesorRequest;
 import com.omar.backend.mymentor.models.dto.MentorDto;
 import com.omar.backend.mymentor.models.dto.ProfessionalDto;
 import com.omar.backend.mymentor.services.ProfessionalService;
@@ -26,10 +29,11 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @RestController
 @CrossOrigin(origins = "${allowed.origins}")
-@Tag(name = "Professional", description = "API para gestionar profesionales, áreas y mentores")
+@Tag(name = "Professional", description = "API para gestionar asesores, áreas y mentores")
 public class ProfessionalController {
 
     @Autowired
@@ -82,11 +86,11 @@ public class ProfessionalController {
         }
     }
 
-    @Operation(summary = "Listar todos los profesionales",
-               description = "Obtiene una lista de todos los profesionales registrados")
-    @ApiResponse(responseCode = "200", description = "Lista de profesionales obtenida con éxito.",
+    @Operation(summary = "Listar todos los asesores",
+               description = "Obtiene una lista de todos los asesores registrados")
+    @ApiResponse(responseCode = "200", description = "Lista de asesores obtenida con éxito.",
                  content = @Content(schema = @Schema(implementation = ProfessionalDto.class)))
-    @ApiResponse(responseCode = "404", description = "No se encontraron profesionales en la BD.")
+    @ApiResponse(responseCode = "404", description = "No se encontraron asesores en la BD.")
     @ApiResponse(responseCode = "500", description = "Error interno del servidor.")
     @GetMapping("/professionals")
     public ResponseEntity<?> listProfessionals() {
@@ -96,10 +100,10 @@ public class ProfessionalController {
             professionalsDTO = service.findProfessionalAll();
             if(!professionalsDTO.isEmpty()){
                 response.put("profesiones", professionalsDTO);
-                response.put("mensaje" , "Lista de profesionales obtenida con éxito.");
+                response.put("mensaje" , "Lista de asesores obtenida con éxito.");
                 return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
             }else{
-                response.put("mensaje", "No se encontraron profesionales en la BD.");
+                response.put("mensaje", "No se encontraron asesores en la BD.");
                 return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
             }
         } catch(DataAccessException e){
@@ -110,11 +114,11 @@ public class ProfessionalController {
         
     }
 
-    @Operation(summary = "Listar profesionales por área",
-               description = "Obtiene una lista de profesionales filtrados por un área específica")
-    @ApiResponse(responseCode = "200", description = "Lista de profesionales obtenida con éxito.",
+    @Operation(summary = "Listar asesores por área",
+               description = "Obtiene una lista de asesores filtrados por un área específica")
+    @ApiResponse(responseCode = "200", description = "Lista de asesores obtenida con éxito.",
                  content = @Content(schema = @Schema(implementation = ProfessionalDto.class)))
-    @ApiResponse(responseCode = "404", description = "No se encontraron profesionales para el área especificada.")
+    @ApiResponse(responseCode = "404", description = "No se encontraron asesores para el área especificada.")
     @ApiResponse(responseCode = "500", description = "Error interno del servidor.")
     @GetMapping("/professionals/area/{areaId}")
     public ResponseEntity<?> listProfessionalsByArea(@PathVariable Long areaId) {
@@ -124,10 +128,10 @@ public class ProfessionalController {
             professionalsDTO = service.findProfessionalByAreaId(areaId);
             if(!professionalsDTO.isEmpty()){
                 response.put("profesiones", professionalsDTO);
-                response.put("mensaje" , "Lista de profesionales obtenida con éxito.");
+                response.put("mensaje" , "Lista de asesores obtenida con éxito.");
                 return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
             } else {
-                response.put("mensaje", "No se encontraron profesionales para el área especificada.");
+                response.put("mensaje", "No se encontraron asesores para el área especificada.");
                 return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
             }    
         } catch(DataAccessException e){
@@ -137,23 +141,23 @@ public class ProfessionalController {
         }
     }
 
-    @Operation(summary = "Obtener profesional por ID",
-               description = "Retorna un profesional específico basado en su ID")
-    @ApiResponse(responseCode = "200", description = "Profesional encontrado con éxito.",
+    @Operation(summary = "Obtener asesor por ID",
+               description = "Retorna un asesor específico basado en su ID")
+    @ApiResponse(responseCode = "200", description = "asesor encontrado con éxito.",
                  content = @Content(schema = @Schema(implementation = ProfessionalDto.class)))
-    @ApiResponse(responseCode = "404", description = "Profesional no encontrado.")
+    @ApiResponse(responseCode = "404", description = "asesor no encontrado.")
     @ApiResponse(responseCode = "500", description = "Error interno del servidor.")
     @GetMapping("/professional/{id}")
     public ResponseEntity<?> showProfessional(@PathVariable Long id) {
         Map<String, Object> response = new HashMap<>();
         try {
-            Optional<ProfessionalDto> areaOptional = service.findProfessionalById(id);
-            if (areaOptional.isPresent()) {
-                response.put("profesion", areaOptional.orElseThrow());
-                response.put("mensaje" , "Profesional encontrado con éxito.");
+            Optional<ProfessionalDto> professionalOptional = service.findProfessionalById(id);
+            if (professionalOptional.isPresent()) {
+                response.put("profesion", professionalOptional.orElseThrow());
+                response.put("mensaje" , "Asesor encontrado con éxito.");
                 return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
             } else {
-                response.put("mensaje", "Profesional no encontrado.");
+                response.put("mensaje", "Asesor no encontrado.");
                 return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
             }
         } catch(DataAccessException e){
@@ -163,11 +167,109 @@ public class ProfessionalController {
         }
     }
 
-    @Operation(summary = "Agregar profesional a usuario",
-               description = "Asocia un profesional a un usuario específico")
-    @ApiResponse(responseCode = "201", description = "Profesional agregado con éxito.",
+    @Operation(summary = "Crear un nuevo asesor",
+               description = "Crea un nuevo asesor con los datos proporcionados")
+    @ApiResponse(responseCode = "201", description = "Asesor creado con éxito.",
+                 content = @Content(schema = @Schema(implementation = ProfessionalDto.class)))
+    @ApiResponse(responseCode = "400", description = "Error en los datos proporcionados.")
+    @ApiResponse(responseCode = "404", description = "Área no encontrada.")
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor.")
+    @PostMapping("/professional")
+    public ResponseEntity<?> createProfessional(@Valid @RequestBody AsesorRequest asesorRequest) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Optional<AreaDto> areaOptional = service.findAreaById(asesorRequest.getIdArea());
+            if (!areaOptional.isPresent()) {
+                response.put("mensaje", "El área con ID: " + asesorRequest.getIdArea() + " no existe.");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+
+            ProfessionalDto professionalDto = new ProfessionalDto();
+            professionalDto.setName(asesorRequest.getName());
+            professionalDto.setDescription(asesorRequest.getDescription());
+            professionalDto.setArea(areaOptional.get());
+
+            ProfessionalDto createdProfessional = service.createProfessional(professionalDto);
+
+            response.put("asesor", createdProfessional);
+            response.put("mensaje", "Asesor creado con éxito.");
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } catch (DataAccessException e) {
+            response.put("mensaje", "Error al crear el asesor.");
+            response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Operation(summary = "Actualizar un asesor existente",
+               description = "Actualiza los datos de un asesor existente")
+    @ApiResponse(responseCode = "200", description = "Asesor actualizado con éxito.",
+                 content = @Content(schema = @Schema(implementation = ProfessionalDto.class)))
+    @ApiResponse(responseCode = "404", description = "Asesor o área no encontrados.")
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor.")
+    @PutMapping("/professional/{id}")
+    public ResponseEntity<?> updateProfessional(@PathVariable Long id, @Valid @RequestBody AsesorRequest asesorRequest) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Optional<AreaDto> areaOptional = service.findAreaById(asesorRequest.getIdArea());
+            if (!areaOptional.isPresent()) {
+                response.put("mensaje", "El área con ID: " + asesorRequest.getIdArea() + " no existe.");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+
+            ProfessionalDto professionalDto = new ProfessionalDto();
+            professionalDto.setId(id);
+            professionalDto.setName(asesorRequest.getName());
+            professionalDto.setDescription(asesorRequest.getDescription());
+            professionalDto.setArea(areaOptional.get());
+
+            Optional<ProfessionalDto> updatedProfessionalOptional = service.updateProfessional(id, professionalDto);
+
+            if (updatedProfessionalOptional.isPresent()) {
+                response.put("asesor", updatedProfessionalOptional.get());
+                response.put("mensaje", "Asesor actualizado con éxito.");
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                response.put("mensaje", "No se encontró el asesor con ID: " + id);
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+        } catch (DataAccessException e) {
+            response.put("mensaje", "Error al actualizar el asesor.");
+            response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Operation(summary = "Eliminar un asesor",
+               description = "Elimina un asesor existente por su ID")
+    @ApiResponse(responseCode = "204", description = "Asesor eliminado con éxito.")
+    @ApiResponse(responseCode = "404", description = "Asesor no encontrado.")
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor.")
+    @DeleteMapping("/professional/{id}")
+    public ResponseEntity<?> deleteProfessional(@PathVariable Long id) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Optional<ProfessionalDto> professionalOptional = service.findProfessionalById(id);
+            if (professionalOptional.isPresent()) {
+                service.deleteProfessional(id);
+                response.put("mensaje", "Asesor eliminado con éxito.");
+                return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+            } else {
+                response.put("mensaje", "No se encontró el asesor con ID: " + id);
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+        } catch (DataAccessException e) {
+            response.put("mensaje", "Error al eliminar el asesor.");
+            response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Operation(summary = "Agregar asesor a usuario",
+               description = "Asocia un asesor a un usuario específico")
+    @ApiResponse(responseCode = "201", description = "Asesor agregado con éxito.",
                  content = @Content(schema = @Schema(implementation = MentorDto.class)))
-    @ApiResponse(responseCode = "400", description = "Error al asociar el profesional al usuario.")
+    @ApiResponse(responseCode = "400", description = "Error al asociar el asesor al usuario.")
     @ApiResponse(responseCode = "500", description = "Error interno del servidor.")
     @PostMapping("/professional/{professionalId}/uuid/{uuid}")
     public ResponseEntity<?> addProfessionalToUser(@PathVariable String uuid, @PathVariable Long professionalId) {
@@ -177,10 +279,10 @@ public class ProfessionalController {
             mentorOptional = service.addProfessionalToUser(uuid, professionalId);
             if(mentorOptional.isPresent()){
                 response.put("asesor", mentorOptional.orElseThrow());
-                response.put("mensaje", "Profesional agregado con éxito.");
+                response.put("mensaje", "Asesor agregado con éxito.");
                 return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
             }else{
-                response.put("mensaje", "Error al asociar el profesional al usuario.");
+                response.put("mensaje", "Error al asociar el asesor al usuario.");
                 return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
             }
         } catch (Exception e) {
@@ -190,16 +292,16 @@ public class ProfessionalController {
         }
     }
 
-    @Operation(summary = "Eliminar profesional de usuario",
-               description = "Desasocia un profesional de un usuario")
-    @ApiResponse(responseCode = "204", description = "Profesional eliminado con éxito.")
+    @Operation(summary = "Eliminar asesor de usuario",
+               description = "Desasocia un asesor de un usuario")
+    @ApiResponse(responseCode = "204", description = "Asesor eliminado con éxito.")
     @ApiResponse(responseCode = "500", description = "Error interno del servidor.")
     @DeleteMapping("/mentor/{userProfessionalId}")
     public ResponseEntity<?> removeProfessionalFromUser(@PathVariable Long userProfessionalId) {
         Map<String, Object> response = new HashMap<>();
         try {
             service.removeProfessionalFromUser(userProfessionalId);
-            response.put("mensaje", "Profesional eliminado con éxito.");
+            response.put("mensaje", "Asesor eliminado con éxito.");
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NO_CONTENT);
         } catch (Exception e) {
             response.put("mensaje", "Error interno del servidor.");

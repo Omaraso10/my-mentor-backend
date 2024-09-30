@@ -17,6 +17,12 @@ public interface ProfessionalService {
 
     Optional<ProfessionalDto> findProfessionalById(Long id);
 
+    public ProfessionalDto createProfessional(ProfessionalDto professionalDto);
+
+    public Optional<ProfessionalDto> updateProfessional(Long id, ProfessionalDto professionalDto);
+
+    public void deleteProfessional(Long id);
+
     List<ProfessionalDto> findProfessionalByAreaId(Long areaId);
 
     public Optional<MentorDto> addProfessionalToUser(String uuid, Long professionalId);

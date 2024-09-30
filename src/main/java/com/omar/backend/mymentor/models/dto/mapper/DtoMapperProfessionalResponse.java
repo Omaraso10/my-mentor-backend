@@ -2,7 +2,9 @@ package com.omar.backend.mymentor.models.dto.mapper;
 
 import org.springframework.stereotype.Component;
 
+import com.omar.backend.mymentor.models.dto.AreaDto;
 import com.omar.backend.mymentor.models.dto.ProfessionalDto;
+import com.omar.backend.mymentor.models.entities.Area;
 import com.omar.backend.mymentor.models.entities.Professional;
 
 @Component
@@ -30,7 +32,15 @@ public class DtoMapperProfessionalResponse {
         professionalDto.setId(professional.getId());
         professionalDto.setName(professional.getName());
         professionalDto.setDescription(professional.getDescription());
+        professionalDto.setArea(getAreaDto(professional.getArea()));
         return professionalDto;
+    }
+
+    public AreaDto getAreaDto(Area area) {
+        AreaDto areaDto = new AreaDto();
+        areaDto.setId(area.getId());
+        areaDto.setName(area.getName());
+        return areaDto;
     }
 
 }

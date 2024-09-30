@@ -22,6 +22,10 @@ public class ProfessionalDto implements Serializable {
             example = "Como Desarrollador Mobile, me especializo en la creación de aplicaciones para dispositivos móviles que son intuitivas...")
     private String description;
 
+    @JsonProperty("area")
+    @Schema(description = "Información del area asociada")
+    private AreaDto area;
+
     public Long getId() {
         return id;
     }
@@ -39,6 +43,12 @@ public class ProfessionalDto implements Serializable {
     }
     public void setDescription(String description) {
         this.description = description;
+    }
+    public AreaDto getArea() {
+        return area;
+    }
+    public void setArea(AreaDto area) {
+        this.area = area;
     }
     
 }

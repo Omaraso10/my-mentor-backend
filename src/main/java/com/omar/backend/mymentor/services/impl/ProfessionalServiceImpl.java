@@ -13,6 +13,7 @@ import com.omar.backend.mymentor.models.dto.MentorDto;
 import com.omar.backend.mymentor.models.dto.ProfessionalDto;
 import com.omar.backend.mymentor.models.dto.mapper.DtoMapperAreaResponse;
 import com.omar.backend.mymentor.models.dto.mapper.DtoMapperMentorResponse;
+import com.omar.backend.mymentor.models.dto.mapper.DtoMapperProfessionalRequest;
 import com.omar.backend.mymentor.models.dto.mapper.DtoMapperProfessionalResponse;
 import com.omar.backend.mymentor.models.entities.Area;
 import com.omar.backend.mymentor.models.entities.Professional;
@@ -88,6 +89,49 @@ public class ProfessionalServiceImpl implements ProfessionalService{
                 .stream()
                 .map(p -> DtoMapperProfessionalResponse.builder().setProfessional(p).build())
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public ProfessionalDto createProfessional(ProfessionalDto professionalDto) {
+        Professional professional = DtoMapperProfessionalRequest.builder()
+                .setProfessional(professionalDto)
+                .build();
+        
+        Professional savedProfessional = professionalRepository.save(professional);
+        
+        return DtoMapperProfessionalResponse.builder()
+                .setProfessional(savedProfessional)
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public Optional<ProfessionalDto> updateProfessional(Long id, ProfessionalDto professionalDto) {
+        Optional<Professional> optionalProfessional = professionalRepository.findById(id);
+        
+        if (optionalProfessional.isPresent()) {
+            Professional professional = optionalProfessional.get();
+            professional.setName(professionalDto.getName());
+            professional.setDescription(professionalDto.getDescription());
+            
+            Optional<Area> optionalArea = areaRepository.findById(professionalDto.getArea().getId());
+            optionalArea.ifPresent(professional::setArea);
+            
+            Professional updatedProfessional = professionalRepository.save(professional);
+            
+            return Optional.of(DtoMapperProfessionalResponse.builder()
+                    .setProfessional(updatedProfessional)
+                    .build());
+        }
+        
+        return Optional.empty();
+    }
+
+    @Override
+    @Transactional
+    public void deleteProfessional(Long id) {
+        professionalRepository.deleteById(id);
     }
 
     @Override
