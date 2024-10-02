@@ -7,6 +7,9 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.omar.backend.mymentor.models.dto.AreaDto;
@@ -49,7 +53,7 @@ public class ProfessionalController {
         List<AreaDto> areasDTO = null;
         Map<String, Object> response = new HashMap<>();
         try {
-            areasDTO = service.findAreaAll();
+            areasDTO = service.findAreaGeneral();
         } catch(DataAccessException e){
             response.put("mensaje", "Error interno del servidor.");
             response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
@@ -112,6 +116,18 @@ public class ProfessionalController {
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         
+    }
+
+    @Operation(summary = "Listar asesores paginados",
+               description = "Obtiene una página de asesores")
+    @ApiResponse(responseCode = "200", description = "Página de asesores obtenida con éxito.",
+                 content = @Content(schema = @Schema(implementation = Page.class)))
+    @GetMapping("/professionals/page/{page}")
+    public ResponseEntity<Page<ProfessionalDto>> list(@PathVariable Integer page, @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ProfessionalDto> professionals = service.findAdvisorysGeneral(pageable);
+    
+    return ResponseEntity.ok(professionals);
     }
 
     @Operation(summary = "Listar asesores por área",

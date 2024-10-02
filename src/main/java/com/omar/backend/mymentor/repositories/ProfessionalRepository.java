@@ -2,6 +2,8 @@ package com.omar.backend.mymentor.repositories;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -13,4 +15,8 @@ public interface ProfessionalRepository extends CrudRepository<Professional, Lon
 
     @Query("select p from Professional p where p.area.id=?1")
     List<Professional> findByAreaId(Long area_id);
+
+    Page<Professional> findAll(Pageable pageable);
+
+    Page<Professional> findByArea_Name(String areaName, Pageable pageable);
 }

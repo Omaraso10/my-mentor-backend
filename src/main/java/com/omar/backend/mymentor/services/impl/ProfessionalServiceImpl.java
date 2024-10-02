@@ -1,10 +1,13 @@
 package com.omar.backend.mymentor.services.impl;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,9 +48,17 @@ public class ProfessionalServiceImpl implements ProfessionalService{
         List<Area> areas = (List<Area>) areaRepository.findAll();
         return areas
                 .stream()
-                .filter(area -> !area.getId().equals(1L)) 
                 .map(a -> DtoMapperAreaResponse.builder().setArea(a).build())
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AreaDto> findAreaGeneral() {
+        return areaRepository.findByNameIgnoreCase("General")
+                .map(a -> DtoMapperAreaResponse.builder().setArea(a).build())
+                .map(Collections::singletonList)
+                .orElse(Collections.emptyList());
     }
 
     @Override
@@ -66,9 +77,24 @@ public class ProfessionalServiceImpl implements ProfessionalService{
         List<Professional> professionals = (List<Professional>) professionalRepository.findAll();
         return professionals
                 .stream()
-                .filter(p -> !p.getId().equals(1L)) 
                 .map(p -> DtoMapperProfessionalResponse.builder().setProfessional(p).build())
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ProfessionalDto> findAdvisorysGeneral(Pageable pageable) {
+    return professionalRepository
+            .findByArea_Name("General", pageable)
+            .map(p -> DtoMapperProfessionalResponse.builder().setProfessional(p).build());
+}
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ProfessionalDto> findAll(Pageable pageable) {
+        return professionalRepository
+                .findAll(pageable)
+                .map(p -> DtoMapperProfessionalResponse.builder().setProfessional(p).build());
     }
 
     @Override
