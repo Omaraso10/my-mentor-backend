@@ -1,12 +1,20 @@
 package com.omar.backend.mymentor.services.impl;
 
+import java.io.ByteArrayOutputStream;
+import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
+import javax.imageio.ImageIO;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.apache.commons.imaging.ImageFormats;
+import org.apache.commons.imaging.ImageInfo;
+import org.apache.commons.imaging.Imaging;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -223,12 +231,15 @@ public class AIServiceImpl implements AIService {
             JSONArray userContent = new JSONArray();
             
             if (base64Image != null && !base64Image.isEmpty()) {
+
+                String jpegImage = ensureJpegFormat(base64Image);
+
                 JSONObject imageContent = new JSONObject()
                     .put("type", "image")
                     .put("source", new JSONObject()
                         .put("type", "base64")
                         .put("media_type", "image/jpeg")
-                        .put("data", base64Image));
+                        .put("data", jpegImage));
                 userContent.put(imageContent);
             }
             
@@ -281,6 +292,58 @@ public class AIServiceImpl implements AIService {
             logger.error("Respuesta que causó el error: {}", responseBody);
         }
         return "";
+    }
+
+    private String ensureJpegFormat(String base64Image) {
+        if (base64Image == null || base64Image.isEmpty()) {
+            logger.error("La imagen base64 de entrada está vacía o es nula");
+            return "";
+        }
+    
+        try {
+            logger.debug("Iniciando proceso de conversión de imagen");
+            
+            // Decodificar la imagen base64
+            byte[] imageBytes = Base64.getDecoder().decode(base64Image);
+            logger.debug("Imagen decodificada, tamaño: {} bytes", imageBytes.length);
+            
+            // Obtener información de la imagen
+            ImageInfo imageInfo = Imaging.getImageInfo(imageBytes);
+            logger.debug("Formato de imagen detectado: {}", imageInfo.getFormat());
+            
+            // Si ya es JPEG, retornar la imagen original
+            if (imageInfo.getFormat() == ImageFormats.JPEG) {
+                logger.debug("La imagen ya está en formato JPEG, retornando original");
+                return base64Image;
+            }
+            
+            logger.debug("Iniciando conversión a JPEG");
+            // Si no es JPEG, convertir
+            BufferedImage image = Imaging.getBufferedImage(imageBytes);
+            if (image == null) {
+                logger.error("No se pudo leer la imagen");
+                return base64Image;
+            }
+    
+            // Crear una nueva imagen con fondo blanco (sin transparencia)
+            BufferedImage newImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
+            newImage.createGraphics().drawImage(image, 0, 0, Color.WHITE, null);
+    
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            boolean success = ImageIO.write(newImage, "jpeg", outputStream);
+            if (!success) {
+                logger.error("No se pudo escribir la imagen en formato JPEG");
+                return base64Image;
+            }
+            
+            // Codificar de nuevo a base64
+            String result = Base64.getEncoder().encodeToString(outputStream.toByteArray());
+            logger.debug("Conversión a JPEG completada, nuevo tamaño: {} caracteres", result.length());
+            return result;
+        } catch (Exception e) {
+            logger.error("Error al procesar la imagen", e);
+            return base64Image; // Devolver la imagen original si falla el proceso
+        }
     }
 
     private String getApiUrl(String apiType) {
