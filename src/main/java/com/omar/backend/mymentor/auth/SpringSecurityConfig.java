@@ -53,6 +53,7 @@ public class SpringSecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(authz -> authz
+                .requestMatchers(HttpMethod.POST, "/login", "/refresh-token", "/logout").permitAll()
                 .requestMatchers(HttpMethod.GET, "/gpt").hasAnyRole("USER", "ADMIN")
                 .requestMatchers(HttpMethod.GET, "/area", "/areas").hasAnyRole("USER", "ADMIN")
                 .requestMatchers(HttpMethod.GET, "/professional", "/professionals").hasAnyRole("USER", "ADMIN")
@@ -73,13 +74,13 @@ public class SpringSecurityConfig {
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
-
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
         config.setAllowedOriginPatterns(Arrays.asList("*"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
         config.setAllowCredentials(true);
+        config.setExposedHeaders(Arrays.asList("Authorization")); // Añadido para exponer el header de Authorization
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
@@ -93,5 +94,4 @@ public class SpringSecurityConfig {
         bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
         return bean;
     }
-
 }
